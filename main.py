@@ -22,24 +22,27 @@ def parse_json_script(soup):
 
     if soup.findAll("title"):
         title = soup.find("title").string
+        if title is not None: title = title.strip()
         #print("Title: "+soup.find("title").string)
         exel_list.append(title)
     else:
-        exel_list.append("Title не взят")
+        exel_list.append(" ")
 
     if soup.findAll("h1"):
         h1 = soup.find("h1").string
+        if h1 is not None: h1 = h1.strip()
         #print("h1: "+soup.find("h1").string)
         exel_list.append(h1)
     else:
-        exel_list.append("h1 не взят")
+        exel_list.append(" ")
 
     if soup.findAll("meta", attrs={"name": "description"}):
         description = soup.find("meta", attrs={"name": "description"}).get("content")
+        if description is not None: description = description.strip()
         #print("Description: "+soup.find("meta", attrs={"name": "description"}).get("content"))
         exel_list.append(description)
     else:
-        exel_list.append("Description не взят")
+        exel_list.append(" ")
 
     return exel_list
 
@@ -116,17 +119,18 @@ try:
     for url in urls_list:
         headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'}
         response = requests.get(url, headers=headers)
-        if(response.status_code == 200): soup = BeautifulSoup(response.content, 'html.parser')
+        if(response.status_code == 200):
+            soup = BeautifulSoup(response.content, 'html.parser')
 
-        parse_json_script(soup)
-        print(url)
-        print(exel_list)
-        url_count = url_count + 1
-        print(str(url_count), "из", len(lines), " строк обработано")
+            parse_json_script(soup)
+            print(url)
+            print(exel_list)
+            url_count = url_count + 1
+            print(str(url_count), "из", len(lines), " строк обработано")
 
-        # Добавляем каждый отдельный массив данных по урлу в единый массив, который будет затем экспортироваться
-        data.append(exel_list)
-        exel_list = []
+            # Добавляем каждый отдельный массив данных по урлу в единый массив, который будет затем экспортироваться
+            data.append(exel_list)
+            exel_list = []
 except ConnectionRefusedError:
     print("Ошибка: Сервер отклонил соединение.")
 
