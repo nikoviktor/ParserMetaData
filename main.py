@@ -23,26 +23,32 @@ def parse_json_script(soup):
     if soup.findAll("title"):
         title = soup.find("title").string
         if title is not None: title = title.strip()
+        else: title = ' '
         #print("Title: "+soup.find("title").string)
         exel_list.append(title)
     else:
-        exel_list.append(" ")
+        title = ' '
+        exel_list.append(title)
 
     if soup.findAll("h1"):
         h1 = soup.find("h1").string
         if h1 is not None: h1 = h1.strip()
+        else: h1 = ' '
         #print("h1: "+soup.find("h1").string)
         exel_list.append(h1)
     else:
-        exel_list.append(" ")
+        h1 = ' '
+        exel_list.append(h1)
 
     if soup.findAll("meta", attrs={"name": "description"}):
         description = soup.find("meta", attrs={"name": "description"}).get("content")
         if description is not None: description = description.strip()
+        else: description = ' '
         #print("Description: "+soup.find("meta", attrs={"name": "description"}).get("content"))
         exel_list.append(description)
     else:
-        exel_list.append(" ")
+        description = ' '
+        exel_list.append(description)
 
     return exel_list
 
@@ -131,6 +137,11 @@ try:
             # Добавляем каждый отдельный массив данных по урлу в единый массив, который будет затем экспортироваться
             data.append(exel_list)
             exel_list = []
+
+except requests.exceptions.SSLError as ssl_error:
+    print(f"Произошла ошибка SSL: {ssl_error}")
+    # Пропустить текущий URL и продолжить выполнение программы
+
 except ConnectionRefusedError:
     print("Ошибка: Сервер отклонил соединение.")
 
@@ -139,10 +150,3 @@ except Exception as e:
 
 finally:
     export_to_excel(data, "output_metadata.xlsx")
-
-#print(exel_list)
-
-#print(data)
-# Экспорт данных в файл
-#export_to_excel(data, "output_metadata.xlsx")
-#export_to_csv(exel_list, "output.csv")
